@@ -1,3 +1,5 @@
+AI-Powered Smart Notes & Knowledge Retrieval Platform
+
 #FOLDER STRUCTURE
 smart-notes-platform/
 │
