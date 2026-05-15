@@ -9,14 +9,23 @@ export class CacheService {
   });
 
   async set(key: string, value: any) {
-    return this.redis.set(key, value);
+    return this.redis.set(key, JSON.stringify(value));
   }
 
   async get(key: string) {
-    return this.redis.get(key);
+    const data = await this.redis.get(key);
+
+    if (!data) return null;
+
+    if (typeof data === 'string') {
+      return JSON.parse(data);
+    }
+
+    return data;
   }
 
   async del(key: string) {
     return this.redis.del(key);
   }
+  
 }
