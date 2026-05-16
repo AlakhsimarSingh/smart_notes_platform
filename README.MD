@@ -1,6 +1,4 @@
 AI-Powered Smart Notes & Knowledge Retrieval Platform
-
-```markdown
 # Project Name
 
 ## Description
