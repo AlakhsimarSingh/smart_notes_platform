@@ -13,7 +13,11 @@ import {
 
 import { AuthGuard } from '@nestjs/passport';
 
+import { CreateNoteDto } from './dto/create-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
+
 import { NotesService } from './notes.service';
+
 import { RealtimeGateway } from 'src/realtime/realtime.gateway';
 
 @Controller('notes')
@@ -30,7 +34,7 @@ export class NotesController {
 
   @Post()
   createNote(
-    @Body() dto: any,
+    @Body() dto: CreateNoteDto,
     @Req() req,
   ) {
     return this.notesService.createNote(
@@ -57,7 +61,7 @@ export class NotesController {
   @Patch(':id')
   updateNote(
     @Param('id') noteId: string,
-    @Body() dto: any,
+    @Body() dto: UpdateNoteDto,
     @Req() req,
   ) {
     return this.notesService.updateNote(
@@ -91,6 +95,7 @@ export class NotesController {
     @Param('id') noteId: string,
     @Req() req,
   ) {
+    
     return this.notesService.archiveNote(
       req.user.sub,
       noteId,
@@ -123,4 +128,14 @@ export class NotesController {
       body.note,
     );
   }
+  @Patch(':id/unarchive')
+unarchiveNote(
+  @Param('id') noteId: string,
+  @Req() req,
+) {
+  return this.notesService.unarchiveNote(
+    req.user.sub,
+    noteId,
+  );
+}
 }

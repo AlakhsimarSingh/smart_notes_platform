@@ -61,11 +61,12 @@ export class NotesProcessor {
 
       console.log('Sending realtime update...');
 
-      this.realtimeGateway.sendNoteUpdate(
-        userId,
-        updatedNote,
-      );
-
+      this.realtimeGateway.server
+      .to(userId)
+      .emit('noteUpdated', {
+        noteId: updatedNote.id,
+        summary: updatedNote.summary,
+      });
       console.log('Realtime update sent');
 
       console.log('QUEUE JOB COMPLETED');

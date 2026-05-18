@@ -9,6 +9,7 @@ import { CacheModule } from './cache/cache.module';
 import { QueueModule } from './queue/queue.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { BullModule } from '@nestjs/bull';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { BullModule } from '@nestjs/bull';
     CacheModule,
     QueueModule,
     RealtimeModule,
+    ChatModule,
   ],
 
   controllers: [AppController],

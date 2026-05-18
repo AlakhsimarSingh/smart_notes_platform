@@ -73,7 +73,7 @@ export default function SignupPage() {
         loginRes.data.access_token,
         loginRes.data.user
       );
-
+      document.cookie = `token=${loginRes.data.access_token}; path=/`;
       router.push('/dashboard');
     } catch (err: any) {
       console.error(err);

@@ -68,6 +68,7 @@ export default function LoginPage() {
         res.data.access_token,
         res.data.user
       );
+      document.cookie = `token=${res.data.access_token}; path=/`;
 
       router.push('/dashboard');
     } catch (err: any) {
@@ -172,9 +173,18 @@ export default function LoginPage() {
 
         {/* FOOTER */}
 
-        <p className="text-sm text-gray-500 text-center mt-6">
-          Smart Notes Platform
-        </p>
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            Don&apos;t have an account?
+          </p>
+
+          <button
+            onClick={() => router.push('/signup')}
+            className="mt-2 text-black font-semibold hover:underline"
+          >
+            Create an account
+          </button>
+        </div>
       </div>
     </div>
   );

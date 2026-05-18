@@ -4,7 +4,8 @@ import { generateSummary }
   from '../ai/summary.ai.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
-
+import { htmlToText }
+  from 'html-to-text';
 @Processor('notes')
 export class NotesProcessor {
   constructor(
@@ -18,9 +19,11 @@ export class NotesProcessor {
 
     const { noteId, content, userId } =
       job.data;
-
+    const cleanText = htmlToText(
+      content,
+    );
       const summary =
-    await generateSummary(content);
+    await generateSummary(cleanText,);
 
     const updatedNote =
       await this.prisma.note.update({
@@ -45,3 +48,4 @@ export class NotesProcessor {
     return updatedNote;
   }
 }
+

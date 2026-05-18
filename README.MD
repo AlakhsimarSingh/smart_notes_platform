@@ -1,9 +1,8 @@
-AI-Powered Smart Notes & Knowledge Retrieval Platform
-# Project Name
+# AI-Powered Smart Notes & Knowledge Retrieval Platform
 
 ## Description
 
-A brief description of the project and its purpose.
+
 
 ## Table of Contents
 

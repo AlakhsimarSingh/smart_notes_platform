@@ -12,5 +12,6 @@ import { RealtimeModule } from '../realtime/realtime.module';
   imports: [PrismaModule, CacheModule, QueueModule, AuthModule, RealtimeModule],
   providers: [NotesService],
   controllers: [NotesController],
+  exports: [NotesService],
 })
 export class NotesModule {}

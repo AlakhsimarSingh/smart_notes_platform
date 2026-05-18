@@ -7,6 +7,9 @@ import { QueueService } from '../queue/queue.service';
 import { generateEmbedding }
   from '../ai/embedding.ai.service';
 
+import { htmlToText }
+  from 'html-to-text';
+
 import { cosineSimilarity }
   from '../ai/similarity';
 
@@ -28,8 +31,12 @@ export class NotesService {
   try {
     console.log('Generating embedding...');
 
+    const cleanText = htmlToText(
+      data.content,
+    );
+
     const embedding = await generateEmbedding(
-      `${data.title} ${data.content}`,
+      `${data.title} ${cleanText}`,
     );
 
     console.log('Embedding generated');
@@ -111,7 +118,6 @@ export class NotesService {
         await this.prisma.note.findMany({
           where: {
             userId,
-            isArchived: false,
           },
 
           orderBy: {
@@ -148,29 +154,75 @@ export class NotesService {
   // UPDATE NOTE
   // ===================================
 
-  async updateNote(
-    userId: string,
-    noteId: string,
-    data: any,
-  ) {
-    const updated =
-      await this.prisma.note.updateMany({
-        where: {
-          id: noteId,
-          userId,
-        },
+ // ===================================
+// UPDATE NOTE
+// ===================================
 
-        data,
-      });
-
-    // clear cache
-
-    await this.cacheService.del(
-      `notes:${userId}`,
+async updateNote(
+  userId: string,
+  noteId: string,
+  dto: any,
+) {
+  console.log(
+    'UPDATE NOTE START',
+    noteId,
+  );
+  const cleanText = htmlToText(
+    dto.content,
+  );
+  // regenerate embedding
+  const embedding =
+    await generateEmbedding(
+      `${dto.title} ${cleanText}`,
     );
 
-    return updated;
-  }
+  // update note
+  const updatedNote =
+    await this.prisma.note.update({
+      where: {
+        id: noteId,
+      },
+
+      data: {
+        ...dto,
+
+        embedding,
+
+        // reset summary while AI regenerates
+        summary:
+          'Generating AI summary...',
+      },
+    });
+
+  console.log(
+    'NOTE UPDATED',
+    updatedNote.id,
+  );
+
+  // re-trigger AI summary generation
+  await this.queueService.addNoteJob({
+    noteId: updatedNote.id,
+
+    content: updatedNote.content,
+
+    userId,
+  });
+
+  console.log(
+    'AI SUMMARY REQUEUE DONE',
+  );
+
+  // clear notes cache
+  await this.cacheService.del(
+    `notes:${userId}`,
+  );
+
+  console.log(
+    'CACHE CLEARED',
+  );
+
+  return updatedNote;
+}
 
   // ===================================
   // DELETE NOTE
@@ -205,11 +257,15 @@ export class NotesService {
     userId: string,
     noteId: string,
   ) {
+      console.log(
+    'SERVICE ARCHIVE START',
+    noteId
+  );
+    
     const archived =
-      await this.prisma.note.updateMany({
+      await this.prisma.note.update({
         where: {
           id: noteId,
-          userId,
         },
 
         data: {
@@ -371,4 +427,25 @@ export class NotesService {
       });
     }
   }
+async unarchiveNote(
+  userId: string,
+  noteId: string,
+) {
+  const note =
+    await this.prisma.note.update({
+      where: {
+        id: noteId,
+      },
+
+      data: {
+        isArchived: false,
+      },
+    });
+
+  await this.cacheService.del(
+    `notes:${userId}`,
+  );
+
+  return note;
+}
 }

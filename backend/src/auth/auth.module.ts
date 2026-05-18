@@ -15,7 +15,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: '7d',
+        expiresIn: '3d',
       },
     }),
   ],
@@ -23,5 +23,6 @@ import { PrismaModule } from '../prisma/prisma.module';
   controllers: [AuthController],
 
   providers: [AuthService, JwtStrategy],
+  exports: [PassportModule],
 })
 export class AuthModule {}
